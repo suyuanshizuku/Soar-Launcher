@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import soar.auth.AuthProgress;
 import soar.gui.Gui;
 import soar.media.Media;
 import soar.media.MediaManager;
@@ -24,6 +25,7 @@ import soar.utils.theme.ThemeParser;
 public class Soar extends Base{
 
 	public static Soar instance;
+	public AuthProgress authProgress = new AuthProgress();
 	public MediaManager mediaManager = new MediaManager();
 	
 	private String info;
@@ -31,6 +33,8 @@ public class Soar extends Base{
 	private ArrayList<String> logs = new ArrayList<String>();
 	
 	private String version = "2.0";
+
+	private String username, token, refreshToken, id;
 	
 	public Soar() {
 		this.setup();
@@ -39,7 +43,7 @@ public class Soar extends Base{
 	
 	@Override
 	public void setup() {
-
+		
 		instance = this;
 		
 		ThemeParser.init();
@@ -76,8 +80,17 @@ public class Soar extends Base{
 			FileUtils.assetsFolder.mkdir();
 		}
 		
+		authProgress = new AuthProgress();
 		mediaManager = new MediaManager();
-		info = "Launch";
+
+		authProgress.load();
+		
+		if(authProgress.isFirstLogin()) {
+			info = "Please Login";
+		}else {
+			info = "Launch";
+			authProgress.refreshTokenLogin();
+		}
 		
 		super.setup();
 		this.setTitle("Soar Launcher " + "v" + version);
@@ -114,6 +127,8 @@ public class Soar extends Base{
     		FontUtils.regular22.drawString(57, changeLogY, s);
             changeLogY+=25;
 		}
+		
+		FontUtils.icon2_40.drawString(this.getWidth() - 55, this.getHeight() - 55, "B", org.newdawn.slick.Color.white);
 	}
 	
 	@Override
@@ -137,25 +152,35 @@ public class Soar extends Base{
 		
 		if((!info.equals("Launching..."))) {
 			if((!info.equals("Downloading..."))) {
-				if(MouseUtils.isInsideClick(mouseX, mouseY, this.getWidth() / 2 + 140, this.getHeight() - 85, 240, 70, ClickType.LEFT)) {
-					
-					new Thread() {
-						@Override
-						public void run() {
-							try {
-						        ClientUtils.downloadClient();
-						        MinecraftJson json = MinecraftJsonParser.parseJson(new File(FileUtils.clientFolder, "SoarClient.json"));
-						        ClientUtils.downloadJre();
-								ClientUtils.downloadLibraries(json.getLibraries());
-								ClientUtils.downloadNatives(json.getNativeLibraries());
-								ClientUtils.launchClient(json.getLibraries());
-							}catch(Exception e) {
-								e.printStackTrace();
-							}
+				if((!info.equals("Loading..."))) {
+					if(MouseUtils.isInsideClick(mouseX, mouseY, this.getWidth() / 2 + 140, this.getHeight() - 85, 240, 70, ClickType.LEFT)) {
+						if(info.equals("Please Login")) {
+							authProgress.webViewLogin();
+						}else {
+							new Thread() {
+								@Override
+								public void run() {
+									try {
+								        ClientUtils.downloadClient();
+								        MinecraftJson json = MinecraftJsonParser.parseJson(new File(FileUtils.clientFolder, "SoarClient.json"));
+								        ClientUtils.downloadJre();
+										ClientUtils.downloadLibraries(json.getLibraries());
+										ClientUtils.downloadNatives(json.getNativeLibraries());
+										ClientUtils.launchClient(json.getLibraries());
+									}catch(Exception e) {
+										e.printStackTrace();
+									}
+								}
+							}.start();
 						}
-					}.start();
+					}
 				}
 			}
+		}
+		
+		if(MouseUtils.isInsideClick(mouseX, mouseY, this.getWidth() - 55, this.getHeight() - 55, 40, 40, ClickType.LEFT)) {
+			info = "Please Login";
+			authProgress.webViewLogin();
 		}
 	}
 	
@@ -169,5 +194,37 @@ public class Soar extends Base{
 	
 	public void setInfo(String info) {
 		this.info = info;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getRefreshToken() {
+		return refreshToken;
+	}
+
+	public void setRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }

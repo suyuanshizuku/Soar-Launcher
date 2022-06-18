@@ -18,6 +18,7 @@ public class FontUtils {
 	public static UnicodeFont regular_bold30;
 	public static UnicodeFont regular_bold40;
 	public static UnicodeFont icon40;
+	public static UnicodeFont icon2_40;
 	
 	private static boolean loaded;
 	
@@ -25,6 +26,7 @@ public class FontUtils {
 	public static void setup() {
 		
 		Font icon40_;
+		Font icon2_40_;
 		Font regular22_;
 		Font regular_bold30_;
 		Font regular_bold40_;
@@ -83,6 +85,20 @@ public class FontUtils {
 				icon40.getEffects().add(new ColorEffect(Color.WHITE));
 				icon40.addAsciiGlyphs();
 				icon40.loadGlyphs();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			
+			try {
+		        Map<String, Font> locationMap = new HashMap<>();
+				InputStream input;
+				input = new BufferedInputStream(new FileInputStream(new File("assets/icon2.ttf")));
+				locationMap.put(new File("assets/icon2.ttf").getAbsolutePath(), icon2_40_ = Font.createFont(0, input));
+				icon2_40_ = icon2_40_.deriveFont(Font.PLAIN, 40);
+				icon2_40 = new UnicodeFont(icon2_40_);
+				icon2_40.getEffects().add(new ColorEffect(Color.WHITE));
+				icon2_40.addAsciiGlyphs();
+				icon2_40.loadGlyphs();
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

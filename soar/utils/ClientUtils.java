@@ -40,10 +40,10 @@ public class ClientUtils {
             
             launchCMD = launchCMD + FileUtils.clientFolder.getAbsolutePath() + File.separator + "*\" ";
             launchCMD += "net.minecraft.client.main.Main ";
-            launchCMD += "--accessToken 0 ";
+            launchCMD += "--accessToken " + Soar.instance.getToken() + " ";
             launchCMD += "--version SoarClient ";
-            launchCMD += "--username SoarClientUser1234567890 ";
-            launchCMD += "--uuid 0 ";
+            launchCMD += "--username " + Soar.instance.getUsername() + " ";
+            launchCMD += "--uuid " + Soar.instance.getId() + " ";
             String launchDirAfterUserFolder = null;
             switch (OSType.getType()) {
                 case WINDOWS: {
