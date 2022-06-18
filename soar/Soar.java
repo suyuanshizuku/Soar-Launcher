@@ -163,7 +163,7 @@ public class Soar extends Base{
 									try {
 								        ClientUtils.downloadClient();
 								        MinecraftJson json = MinecraftJsonParser.parseJson(new File(FileUtils.clientFolder, "SoarClient.json"));
-								        ClientUtils.downloadJre();
+								        ClientUtils.downloadJava();
 										ClientUtils.downloadLibraries(json.getLibraries());
 										ClientUtils.downloadNatives(json.getNativeLibraries());
 										ClientUtils.launchClient(json.getLibraries());

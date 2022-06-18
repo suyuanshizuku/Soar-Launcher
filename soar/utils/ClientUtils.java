@@ -21,7 +21,7 @@ public class ClientUtils {
             
             switch (OSType.getType()) {
 	            case WINDOWS:{
-	                launchCMD = new File(FileUtils.launcherDir + File.separator + "jre" + File.separator + "bin" + File.separator + "java").getPath();
+	                launchCMD = new File(FileUtils.launcherDir + File.separator + "java" + File.separator + "bin" + File.separator + "java").getPath();
 	                break;
 	            }
 	            default:{
@@ -144,12 +144,12 @@ public class ClientUtils {
         }
     }
     
-    public static void downloadJre() {
-    	if(!FileUtils.jreFolder.exists()) {
+    public static void downloadJava() {
+    	if(!FileUtils.javaFolder.exists()) {
     		Soar.instance.setInfo("Downloading...");
-    		FileUtils.jreFolder.mkdir();
-    		FileUtils.downloadFile("https://github.com/EldoDebug/Soar-Launcher/releases/download/SoarClient-Files/jre.zip", new File(FileUtils.launcherDir, "jre.zip"));
-    		FileUtils.unzip(new File(FileUtils.launcherDir, "jre.zip"), FileUtils.jreFolder);
+    		FileUtils.javaFolder.mkdir();
+    		FileUtils.downloadFile("https://github.com/EldoDebug/Soar-Launcher/releases/download/SoarClient-Files/java.zip", new File(FileUtils.launcherDir, "java.zip"));
+    		FileUtils.unzip(new File(FileUtils.launcherDir, "java.zip"), FileUtils.javaFolder);
     	}
     }
     
