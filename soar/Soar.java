@@ -8,6 +8,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
 import soar.auth.AuthProgress;
 import soar.gui.Gui;
 import soar.media.Media;
@@ -16,10 +19,12 @@ import soar.utils.ClientUtils;
 import soar.utils.ColorUtils;
 import soar.utils.FileUtils;
 import soar.utils.FontUtils;
+import soar.utils.animation.Animation;
 import soar.utils.json.MinecraftJson;
 import soar.utils.json.MinecraftJsonParser;
 import soar.utils.mouse.ClickType;
 import soar.utils.mouse.MouseUtils;
+import soar.utils.mouse.Scroll;
 import soar.utils.theme.ThemeParser;
 
 public class Soar extends Base{
@@ -35,6 +40,9 @@ public class Soar extends Base{
 	private String version = "2.0";
 
 	private String username, token, refreshToken, id;
+	
+	private float scrollY = 0;
+	private Animation scrollAnimation = new Animation(0.0F);
 	
 	public Soar() {
 		this.setup();
@@ -96,7 +104,7 @@ public class Soar extends Base{
 		this.setTitle("Soar Launcher " + "v" + version);
 		this.setWidth(960);
 		this.setHeight(535);
-		this.setMaxFPS(60);
+		this.setMaxFPS(120);
 	}
 	
 	@Override
@@ -104,7 +112,7 @@ public class Soar extends Base{
 		
 		int offsetY = 25;
 		int changeLogY = 138;
-
+		
 		Gui.drawGradientRound(0, 0, this.getWidth(), this.getHeight(), 0, ColorUtils.getClientColor(0).getRGB(), ColorUtils.getClientColor(90).getRGB(), ColorUtils.getClientColor(180).getRGB(), ColorUtils.getClientColor(270).getRGB());
 		Gui.drawRectangle(this.getWidth() - 70, 0, this.getWidth(), this.getHeight(), new Color(20, 20, 20, 60).getRGB());
 		
@@ -122,11 +130,34 @@ public class Soar extends Base{
 		Gui.drawRoundUnderRect(35, 90, 350, 45, 12, new Color(20, 20, 20, 60).getRGB());
 		FontUtils.regular_bold30.drawString(45, 93, "Changelog");
 		
+		GL11.glEnable(GL11.GL_SCISSOR_TEST);
+		GL11.glScissor(55, 195, 330, 205);
+		
+        final Scroll scroll = this.scroll();
 
+        if(scroll != null && logs.size() > 8) {
+        	switch (scroll) {
+        	case DOWN:
+        		if(scrollY > -(logs.size() * (25 - 8))) {
+            		scrollY -=20;
+        		}
+        		break;
+            case UP:
+            	if(scrollY < -10) {
+        			scrollY += 20;
+            	}
+        		break;
+        	}
+        }
+
+        scrollAnimation.setAnimation(scrollY, 15);
+        
 		for(String s : logs) {
-    		FontUtils.regular22.drawString(57, changeLogY, s);
+    		FontUtils.regular22.drawString(57, changeLogY + scrollAnimation.getValue(), s);
             changeLogY+=25;
 		}
+		
+		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 		
 		FontUtils.icon2_40.drawString(this.getWidth() - 55, this.getHeight() - 55, "B", org.newdawn.slick.Color.white);
 	}
@@ -183,6 +214,18 @@ public class Soar extends Base{
 			authProgress.webViewLogin();
 		}
 	}
+	
+	public Scroll scroll() {
+		int mouse = Mouse.getDWheel();
+
+        if(mouse > 0) {
+        	return Scroll.UP;
+        }else if(mouse < 0) {
+        	return Scroll.DOWN;
+        }else {
+        	return null;
+        }
+    }
 	
 	public static void main(String[] args) {
 		new Soar();
