@@ -16,6 +16,7 @@ public class FileUtils {
 	
 	public static File userDir = new File(System.getProperty("user.home"));
 	public static File launcherDir = new File(FileUtils.userDir, ".soarclient");
+	public static File logDir = new File(FileUtils.launcherDir, "log");
 	public static File clientFolder = new File(FileUtils.launcherDir, "game");
 	public static File assetsFolder = new File(FileUtils.launcherDir, "assets");
 	public static File javaFolder = new File(FileUtils.launcherDir, "java");

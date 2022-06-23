@@ -36,16 +36,19 @@ public class AuthProgress {
 				MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
 				try {
 					MicrosoftAuthResult acc = authenticator.loginWithWebview();
+					Soar.instance.logger.info("Login...");
 					Soar.instance.setUsername(acc.getProfile().getName());
 					Soar.instance.setId(acc.getProfile().getId());
 					Soar.instance.setToken(acc.getAccessToken());
 					Soar.instance.setRefreshToken(acc.getRefreshToken());
 					Soar.instance.authProgress.save();
+					Soar.instance.logger.info("Success Login!");
 					firstLogin = false;
 					Soar.instance.setInfo("Launch");
 				} catch (MicrosoftAuthenticationException e) {
 					firstLogin = true;
 					Soar.instance.setInfo("Please Login");
+					Soar.instance.logger.error("Field Login!");
 					e.printStackTrace();
 				}
 			}
@@ -59,13 +62,16 @@ public class AuthProgress {
 			public void run() {
 				MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
 				try {
+					Soar.instance.logger.info("Login...");
 					MicrosoftAuthResult acc = authenticator.loginWithRefreshToken(Soar.instance.getRefreshToken());
 					Soar.instance.setToken(acc.getAccessToken());
+					Soar.instance.logger.info("Success Login!");
 					firstLogin = false;
 					Soar.instance.setInfo("Launch");
 				} catch (MicrosoftAuthenticationException e) {
 					firstLogin = true;
 					Soar.instance.setInfo("Please Login");
+					Soar.instance.logger.info("Field Login!");
 					e.printStackTrace();
 				}
 			}
@@ -88,6 +94,7 @@ public class AuthProgress {
 			}
 			pw.close();
 		} catch (FileNotFoundException e) {
+			Soar.instance.logger.info("File does not exist!");
 			e.printStackTrace();
 		}
 	}
@@ -105,6 +112,7 @@ public class AuthProgress {
 			}
 			reader.close();
 		} catch (Exception e) {
+			Soar.instance.logger.info("File does not exist!");
 			e.printStackTrace();
 		}
 		

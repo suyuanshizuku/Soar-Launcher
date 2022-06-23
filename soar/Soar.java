@@ -19,6 +19,7 @@ import soar.utils.ClientUtils;
 import soar.utils.ColorUtils;
 import soar.utils.FileUtils;
 import soar.utils.FontUtils;
+import soar.utils.Logger;
 import soar.utils.animation.Animation;
 import soar.utils.json.MinecraftJson;
 import soar.utils.json.MinecraftJsonParser;
@@ -37,14 +38,17 @@ public class Soar extends Base{
 	
 	private ArrayList<String> logs = new ArrayList<String>();
 	
-	private String version = "2.0";
+	private String version = "2.1";
 
 	private String username, token, refreshToken, id;
 	
 	private float scrollY = 0;
 	private Animation scrollAnimation = new Animation(0.0F);
-	
+
+	public Logger logger = new Logger();
+    
 	public Soar() {
+		logger.info("Setting up...");
 		this.setup();
 		this.createDisplay();
 	}
@@ -54,7 +58,10 @@ public class Soar extends Base{
 		
 		instance = this;
 		
+		logger.info("Loading theme...");
 		ThemeParser.init();
+		
+		logger.info("Downloading Changelog...");
 		
 		try {
 	        URL url = new URL("https://pastebin.com/raw/zTpdMhrp");
@@ -67,6 +74,8 @@ public class Soar extends Base{
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+		
+		logger.info("Making dir...");
 		
 		if(!FileUtils.launcherDir.exists()) {
 			FileUtils.launcherDir.mkdir();
@@ -88,9 +97,17 @@ public class Soar extends Base{
 			FileUtils.assetsFolder.mkdir();
 		}
 		
+		if(!FileUtils.logDir.exists()) {
+			FileUtils.logDir.mkdir();
+		}
+		
+		logger.info("Loading AuthProgress...");
 		authProgress = new AuthProgress();
+		
+		logger.info("Loading Medias...");
 		mediaManager = new MediaManager();
 
+		logger.info("Loading AuthProgress");
 		authProgress.load();
 		
 		if(authProgress.isFirstLogin()) {
@@ -105,6 +122,8 @@ public class Soar extends Base{
 		this.setWidth(960);
 		this.setHeight(535);
 		this.setMaxFPS(120);
+		
+		logger.info("Drawing Screen!");
 	}
 	
 	@Override
@@ -171,6 +190,8 @@ public class Soar extends Base{
 		for(Media m : mediaManager.getMedias()) {
 			
 			if(MouseUtils.isInsideClick(mouseX, mouseY, this.getWidth() - 55, offsetY, 40, 40, ClickType.LEFT)) {
+				logger.info("Navigating to the browser...");
+				
 				try {
 					desktop.browse(new URI(m.getUrl()));
 				} catch (Exception e) {
@@ -186,6 +207,7 @@ public class Soar extends Base{
 				if((!info.equals("Loading..."))) {
 					if(MouseUtils.isInsideClick(mouseX, mouseY, this.getWidth() / 2 + 140, this.getHeight() - 85, 240, 70, ClickType.LEFT)) {
 						if(info.equals("Please Login")) {
+							logger.info("Login...");
 							authProgress.webViewLogin();
 						}else {
 							new Thread() {

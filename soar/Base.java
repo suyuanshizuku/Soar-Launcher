@@ -75,6 +75,8 @@ public class Base {
 			}
 			
 			if(Display.isCloseRequested()) {
+				Soar.instance.logger.save();
+				Soar.instance.logger.info("Closed Soar Launcher!");
 				System.exit(0);
 			}
 		}

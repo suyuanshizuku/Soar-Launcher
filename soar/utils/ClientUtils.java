@@ -18,13 +18,16 @@ public class ClientUtils {
         try {
         	Soar.instance.setInfo("Launching...");
             String launchCMD = "";
+            Soar.instance.logger.info("Launching Client...");
             
             switch (OSType.getType()) {
 	            case WINDOWS:{
+	                Soar.instance.logger.info("Set Windows Java!");
 	                launchCMD = new File(FileUtils.launcherDir + File.separator + "java" + File.separator + "bin" + File.separator + "java").getPath();
 	                break;
 	            }
 	            default:{
+	                Soar.instance.logger.info("Set OtherOS Java!");
 	                launchCMD = "java";
 	                break;
 	            }
@@ -47,18 +50,22 @@ public class ClientUtils {
             String launchDirAfterUserFolder = null;
             switch (OSType.getType()) {
                 case WINDOWS: {
+	                Soar.instance.logger.info("Set Windows Location!");
                     launchDirAfterUserFolder = "AppData\\Roaming\\.minecraft\\";
                     break;
                 }
                 case MAC: {
+	                Soar.instance.logger.info("Set MAC Location!");
                     launchDirAfterUserFolder = "Library\\Application Support\\.minecraft\\";
                     break;
                 }
                 default: {
+	                Soar.instance.logger.info("Set Other Location!");
                     launchDirAfterUserFolder = "\\.minecraft\\";
                     break;
                 }
             }
+            
             final File launchF = new File(FileUtils.userDir, launchDirAfterUserFolder);
             final File assetsF = new File(launchF, "assets");
             launchCMD = launchCMD + "--gameDir \"" + launchF.getAbsolutePath() + "\" ";
@@ -68,12 +75,12 @@ public class ClientUtils {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             String isLine;
             while ((isLine = reader.readLine()) != null) {
-                System.out.println(isLine);
+                Soar.instance.logger.info(isLine);
             }
             final BufferedReader err = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
             String errLine;
             while ((errLine = err.readLine()) != null) {
-                System.err.println(errLine);
+                Soar.instance.logger.error(errLine);
             }
             
             if (!proc.isAlive()) {
@@ -88,6 +95,7 @@ public class ClientUtils {
     public static void downloadNatives(final List<MinecraftNativeLibrary> nativeLibraries) {
         if (FileUtils.nativesFolder.listFiles().length == 0) {
     		Soar.instance.setInfo("Downloading...");
+            Soar.instance.logger.info("Downloading Natives...");
             for (final MinecraftNativeLibrary library : nativeLibraries) {
                 final OSType osType = OSType.getType();
                 if (osType == OSType.WINDOWS) {
@@ -133,6 +141,7 @@ public class ClientUtils {
     public static void downloadLibraries(final List<MinecraftLibrary> libraries) {
         for (final MinecraftLibrary library : libraries) {
             Soar.instance.setInfo("Downloading...");
+            Soar.instance.logger.info("Downloading Client Library: " + library.getName());
             if (!new File(FileUtils.librariesFolder, library.getPath()).getParentFile().exists()) {
                 new File(FileUtils.librariesFolder, library.getPath()).getParentFile().mkdirs();
             }
@@ -147,22 +156,29 @@ public class ClientUtils {
     public static void downloadJava() {
     	if(!FileUtils.javaFolder.exists()) {
     		Soar.instance.setInfo("Downloading...");
+        	Soar.instance.logger.info("Downloading Java...");
     		FileUtils.javaFolder.mkdir();
     		FileUtils.downloadFile("https://github.com/EldoDebug/Soar-Launcher/releases/download/SoarClient-Files/java.zip", new File(FileUtils.launcherDir, "java.zip"));
     		FileUtils.unzip(new File(FileUtils.launcherDir, "java.zip"), FileUtils.javaFolder);
+        	Soar.instance.logger.info("Success Download Java Files!");
     	}
     }
     
     public static void downloadClient() {
+    	Soar.instance.logger.info("Downloading Client Files...");
     	if(!(new File(FileUtils.clientFolder, "SoarClient.jar").exists()) || !(new File(FileUtils.clientFolder, "SoarClient.json").exists()) || ClientUtils.checkUpdate()) {
     		Soar.instance.setInfo("Downloading...");
+    		Soar.instance.logger.info("Downloading SoarClient.jar");
     		FileUtils.downloadFile("https://github.com/EldoDebug/Soar-Launcher/releases/download/SoarClient-Files/SoarClient.jar", new File(FileUtils.clientFolder, "SoarClient.jar"));
+    		Soar.instance.logger.info("Downloading SoarClient.json");
     		FileUtils.downloadFile("https://github.com/EldoDebug/Soar-Launcher/releases/download/SoarClient-Files/SoarClient.json", new File(FileUtils.clientFolder, "SoarClient.json"));
+        	Soar.instance.logger.info("Success Download Client Files!");
     	}
     }
     
     @SuppressWarnings("resource")
 	private static boolean checkUpdate() {
+    	Soar.instance.logger.info("Checking Update...");
 		try {
 	        URL url = new URL("https://pastebin.com/raw/WG2RGHJ4");
 	        Scanner s = new Scanner(url.openStream());
@@ -174,6 +190,7 @@ public class ClientUtils {
 	            }
 	        }
 		}catch(Exception e) {
+			Soar.instance.logger.error("Update check failed.");
 			e.printStackTrace();
 		}
     	return false;

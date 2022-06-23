@@ -12,6 +12,8 @@ import java.util.Map;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.font.effects.ColorEffect;
 
+import soar.Soar;
+
 public class FontUtils {
 
 	public static UnicodeFont regular22;
@@ -43,7 +45,9 @@ public class FontUtils {
 				regular_bold30.getEffects().add(new ColorEffect(Color.WHITE));
 				regular_bold30.addAsciiGlyphs();
 				regular_bold30.loadGlyphs();
+				Soar.instance.logger.info("Loaded RegularBold30");
 			} catch (Exception e1) {
+				Soar.instance.logger.info("The font does not exist!");
 				e1.printStackTrace();
 			}
 			
@@ -57,7 +61,9 @@ public class FontUtils {
 				regular_bold40.getEffects().add(new ColorEffect(Color.WHITE));
 				regular_bold40.addAsciiGlyphs();
 				regular_bold40.loadGlyphs();
+				Soar.instance.logger.info("Loaded RegularBold40");
 			} catch (Exception e1) {
+				Soar.instance.logger.info("The font does not exist!");
 				e1.printStackTrace();
 			}
 			
@@ -71,7 +77,9 @@ public class FontUtils {
 				regular22.getEffects().add(new ColorEffect(Color.WHITE));
 				regular22.addAsciiGlyphs();
 				regular22.loadGlyphs();
+				Soar.instance.logger.info("Loaded Regular22");
 			} catch (Exception e1) {
+				Soar.instance.logger.info("The font does not exist!");
 				e1.printStackTrace();
 			}
 			
@@ -85,7 +93,9 @@ public class FontUtils {
 				icon40.getEffects().add(new ColorEffect(Color.WHITE));
 				icon40.addAsciiGlyphs();
 				icon40.loadGlyphs();
+				Soar.instance.logger.info("Loaded icon40");
 			} catch (Exception e1) {
+				Soar.instance.logger.info("The font does not exist!");
 				e1.printStackTrace();
 			}
 			
@@ -99,7 +109,9 @@ public class FontUtils {
 				icon2_40.getEffects().add(new ColorEffect(Color.WHITE));
 				icon2_40.addAsciiGlyphs();
 				icon2_40.loadGlyphs();
+				Soar.instance.logger.info("Loaded icon2_40");
 			} catch (Exception e1) {
+				Soar.instance.logger.info("The font does not exist!");
 				e1.printStackTrace();
 			}
 			
