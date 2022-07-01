@@ -11,6 +11,7 @@ import soar.Soar;
 import soar.openauth.microsoft.MicrosoftAuthResult;
 import soar.openauth.microsoft.MicrosoftAuthenticationException;
 import soar.openauth.microsoft.MicrosoftAuthenticator;
+import soar.utils.EnumInfo;
 import soar.utils.FileUtils;
 
 public class AuthProgress {
@@ -44,10 +45,10 @@ public class AuthProgress {
 					Soar.instance.authProgress.save();
 					Soar.instance.logger.info("Success Login!");
 					firstLogin = false;
-					Soar.instance.setInfo("Launch");
+					Soar.instance.info = EnumInfo.LAUNCH;
 				} catch (MicrosoftAuthenticationException e) {
 					firstLogin = true;
-					Soar.instance.setInfo("Please Login");
+					Soar.instance.info = EnumInfo.LOGIN;
 					Soar.instance.logger.error("Field Login!");
 					e.printStackTrace();
 				}
@@ -56,26 +57,21 @@ public class AuthProgress {
 	}
 	
 	public void refreshTokenLogin() {
-		Soar.instance.setInfo("Loading...");
-		new Thread() {
-			@Override
-			public void run() {
-				MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
-				try {
-					Soar.instance.logger.info("Login...");
-					MicrosoftAuthResult acc = authenticator.loginWithRefreshToken(Soar.instance.getRefreshToken());
-					Soar.instance.setToken(acc.getAccessToken());
-					Soar.instance.logger.info("Success Login!");
-					firstLogin = false;
-					Soar.instance.setInfo("Launch");
-				} catch (MicrosoftAuthenticationException e) {
-					firstLogin = true;
-					Soar.instance.setInfo("Please Login");
-					Soar.instance.logger.info("Field Login!");
-					e.printStackTrace();
-				}
-			}
-		}.start();
+		Soar.instance.info = EnumInfo.LOADING;
+		MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
+		try {
+			Soar.instance.logger.info("Login...");
+			MicrosoftAuthResult acc = authenticator.loginWithRefreshToken(Soar.instance.getRefreshToken());
+			Soar.instance.setToken(acc.getAccessToken());
+			Soar.instance.logger.info("Success Login!");
+			firstLogin = false;
+			Soar.instance.info = EnumInfo.LAUNCH;
+		} catch (MicrosoftAuthenticationException e) {
+			firstLogin = true;
+			Soar.instance.info = EnumInfo.LOGIN;
+			Soar.instance.logger.info("Field Login!");
+			e.printStackTrace();
+		}
 	}
 	
 	public void save() {

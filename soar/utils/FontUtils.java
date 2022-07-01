@@ -17,6 +17,7 @@ import soar.Soar;
 public class FontUtils {
 
 	public static UnicodeFont regular22;
+	public static UnicodeFont regular40;
 	public static UnicodeFont regular_bold30;
 	public static UnicodeFont regular_bold40;
 	public static UnicodeFont icon40;
@@ -30,6 +31,7 @@ public class FontUtils {
 		Font icon40_;
 		Font icon2_40_;
 		Font regular22_;
+		Font regular40_;
 		Font regular_bold30_;
 		Font regular_bold40_;
 		
@@ -78,6 +80,22 @@ public class FontUtils {
 				regular22.addAsciiGlyphs();
 				regular22.loadGlyphs();
 				Soar.instance.logger.info("Loaded Regular22");
+			} catch (Exception e1) {
+				Soar.instance.logger.info("The font does not exist!");
+				e1.printStackTrace();
+			}
+			
+			try {
+		        Map<String, Font> locationMap = new HashMap<>();
+				InputStream input;
+				input = new BufferedInputStream(new FileInputStream(new File("assets/regular.ttf")));
+				locationMap.put(new File("assets/regular.ttf").getAbsolutePath(), regular40_ = Font.createFont(0, input));
+				regular40_ = regular40_.deriveFont(Font.PLAIN, 40);
+				regular40 = new UnicodeFont(regular40_);
+				regular40.getEffects().add(new ColorEffect(Color.WHITE));
+				regular40.addAsciiGlyphs();
+				regular40.loadGlyphs();
+				Soar.instance.logger.info("Loaded Regular40");
 			} catch (Exception e1) {
 				Soar.instance.logger.info("The font does not exist!");
 				e1.printStackTrace();
