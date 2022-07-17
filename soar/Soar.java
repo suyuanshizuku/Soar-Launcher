@@ -241,9 +241,10 @@ public class Soar extends Base{
 					}
 				}.start();
 			}else {
-				if(info.equals(EnumInfo.LOGIN))
-				logger.info("Login...");
-				authProgress.webViewLogin();
+				if(info.equals(EnumInfo.LOGIN)) {
+					logger.info("Login...");
+					authProgress.webViewLogin();
+				}
 			}
 		}
 
