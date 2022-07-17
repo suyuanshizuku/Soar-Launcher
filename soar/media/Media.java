@@ -3,13 +3,11 @@ package soar.media;
 public class Media {
 	
 	private String name, url, fontID;
-	private org.newdawn.slick.Color color;
 	
-	public Media(String name, String url, String fontID, org.newdawn.slick.Color color) {
+	public Media(String name, String url, String fontID) {
 		this.name = name;
 		this.url = url;
 		this.fontID = fontID;
-		this.color = color;
 	}
 
 	public String getName() {
@@ -34,13 +32,5 @@ public class Media {
 
 	public void setFontID(String fontID) {
 		this.fontID = fontID;
-	}
-
-	public org.newdawn.slick.Color getColor() {
-		return color;
-	}
-
-	public void setColor(org.newdawn.slick.Color color) {
-		this.color = color;
 	}
 }
