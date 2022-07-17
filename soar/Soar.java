@@ -40,7 +40,7 @@ public class Soar extends Base{
 	
 	private ArrayList<String> logs = new ArrayList<String>();
 	
-	private String version = "2.1.2";
+	private String version = "2.2";
 
 	private String username, token, refreshToken, id;
 	
@@ -124,8 +124,7 @@ public class Soar extends Base{
 			}
 			
 			GL11.glDisable(GL11.GL_SCISSOR_TEST);
-			
-			FontUtils.icon2_40.drawString(this.getWidth() - 55, this.getHeight() - 55, "B", org.newdawn.slick.Color.white);
+			FontUtils.icon40.drawString(this.getWidth() - 55, this.getHeight() - 55, "A", org.newdawn.slick.Color.white);
 		}else {
 			new Thread() {
 				@Override
