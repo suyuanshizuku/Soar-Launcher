@@ -7,6 +7,9 @@ import soar.utils.theme.ThemeParser;
 public class ColorUtils {
 
 	public static Color getClientColor(int index, int alpha) {
+		if(ThemeParser.notExists) {
+			return ColorUtils.interpolateColorsBackAndForth(15, index, new Color(56, 186, 187, alpha), new Color(54, 212, 176, alpha), false);
+		}
 		return ColorUtils.interpolateColorsBackAndForth(15, index, new Color(ThemeParser.r1, ThemeParser.g1, ThemeParser.b1, alpha), new Color(ThemeParser.r2, ThemeParser.g2, ThemeParser.b2, alpha), false);
 	}
 	

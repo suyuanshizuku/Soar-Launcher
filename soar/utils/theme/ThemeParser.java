@@ -1,6 +1,5 @@
 package soar.utils.theme;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,6 +12,7 @@ public class ThemeParser {
 
 	private static File dataFile;
 	public static int r1, g1, b1, r2, g2, b2;
+	public static boolean notExists = false;
 	
 	public static void init() {
 		
@@ -21,6 +21,7 @@ public class ThemeParser {
 		if(!dataFile.exists()) {
 			try {
 				dataFile.createNewFile();
+				notExists = true;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
