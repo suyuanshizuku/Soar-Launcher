@@ -1,5 +1,6 @@
 package soar.utils.theme;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -11,11 +12,9 @@ import soar.utils.FileUtils;
 public class ThemeParser {
 
 	private static File dataFile;
-	public static EnumAccentColor accentColor;
+	public static int r1, g1, b1, r2, g2, b2;
 	
 	public static void init() {
-		
-		accentColor = EnumAccentColor.GREEN;
 		
 		dataFile = new File(FileUtils.minecraftFolder, "soar/config/theme/theme.txt");
 		
@@ -49,38 +48,17 @@ public class ThemeParser {
 		for (String s : lines) {
 			String[] args = s.split(":");
 
-			if (s.toLowerCase().startsWith("accentcolor:")) {
-				ThemeParser.accentColor = ThemeParser.getAccentColorByName(args[1]);
+			if (s.toLowerCase().startsWith("color:")) {
+				r1 = Integer.parseInt(args[1]);
+				g1 =  Integer.parseInt(args[2]);
+				b1 = Integer.parseInt(args[3]);
+			}
+			
+			if (s.toLowerCase().startsWith("color2:")) {
+				r2 = Integer.parseInt(args[1]);
+				g2 =  Integer.parseInt(args[2]);
+				b2 = Integer.parseInt(args[3]);
 			}
 		}
-	}
-	
-	public static EnumAccentColor getAccentColorByName(String color) {
-		
-		if(color.equals("BLUE")) {
-			return EnumAccentColor.BLUE;
-		}
-		
-		if(color.equals("GREEN")) {
-			return EnumAccentColor.GREEN;
-		}
-		
-		if(color.equals("MELON")) {
-			return EnumAccentColor.MELON;
-		}
-		
-		if(color.equals("PINK")) {
-			return EnumAccentColor.PINK;
-		}
-		
-		if(color.equals("PURPLE")) {
-			return EnumAccentColor.PURPLE;
-		}
-		
-		if(color.equals("RED")) {
-			return EnumAccentColor.RED;
-		}
-		
-		return EnumAccentColor.GREEN;
 	}
 }
