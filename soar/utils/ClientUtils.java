@@ -13,6 +13,12 @@ import soar.Soar;
 import soar.utils.json.MinecraftLibrary;
 import soar.utils.json.MinecraftNativeLibrary;
 
+import java.security.cert.CertificateException; 
+import java.security.cert.X509Certificate; 
+import javax.net.ssl.SSLContext; 
+import javax.net.ssl.TrustManager; 
+import javax.net.ssl.X509TrustManager; 
+
 public class ClientUtils {
 	
     public static void launchClient(final List<MinecraftLibrary> libs) {

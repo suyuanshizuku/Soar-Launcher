@@ -2,7 +2,9 @@ package soar;
 
 import java.awt.Color;
 import java.awt.Desktop;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -140,12 +142,13 @@ public class Soar extends Base{
 						
 						try {
 					        URL url = new URL("https://pastebin.com/raw/zTpdMhrp");
-					        Scanner s = new Scanner(url.openStream());
+					        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 					        
-					        while (s.hasNext()) {
-					            String[] s2 = s.nextLine().split(":");
-					            logs.add(s2[0]);
+					        String inputLine;
+					        while ((inputLine = in.readLine()) != null) {
+					            logs.add(inputLine);
 					        }
+					        in.close();
 						}catch(Exception e) {
 							e.printStackTrace();
 						}
