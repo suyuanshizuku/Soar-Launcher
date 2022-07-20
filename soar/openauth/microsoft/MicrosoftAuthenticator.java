@@ -158,7 +158,7 @@ public class MicrosoftAuthenticator
     {
         String url = String.format("%s?%s", MICROSOFT_AUTHORIZATION_ENDPOINT, http.buildParams(getLoginParams()));
         LoginFrame frame = new LoginFrame();
-    
+
         return frame.start(url).thenApplyAsync(result -> {
             try {
                 return loginWithTokens(extractTokens(result));

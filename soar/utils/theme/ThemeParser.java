@@ -16,7 +16,7 @@ public class ThemeParser {
 	
 	public static void init() {
 		
-		dataFile = new File(FileUtils.minecraftFolder, "soar/config/theme/theme.txt");
+		dataFile = new File(FileUtils.minecraftFolder, "soar/config.txt");
 		
 		if(!dataFile.exists()) {
 			try {

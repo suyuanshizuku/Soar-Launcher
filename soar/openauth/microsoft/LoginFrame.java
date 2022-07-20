@@ -18,18 +18,22 @@
  */
 package soar.openauth.microsoft;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.concurrent.CompletableFuture;
+
+import javax.swing.JFrame;
+
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.web.WebView;
 import sun.net.www.protocol.https.Handler;
-
-import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.net.*;
-import java.util.concurrent.CompletableFuture;
 
 /*
  * Had to use Swing here, JavaFX is meant to have an 'Application' but only one can exist.
@@ -48,7 +52,7 @@ public class LoginFrame extends JFrame
         this.setTitle("Sign in to Minecraft");
         this.setSize(750, 750);
         this.setLocationRelativeTo(null);
-
+        
         this.setContentPane(new JFXPanel());
     }
 
@@ -85,11 +89,13 @@ public class LoginFrame extends JFrame
         content.setScene(new Scene(webView, this.getWidth(), this.getHeight()));
 
         webView.getEngine().locationProperty().addListener((observable, oldValue, newValue) -> {
+        	
             if (newValue.contains("access_token")) {
                 this.setVisible(false);
                 this.future.complete(newValue);
             }
         });
+        
         webView.getEngine().load(url);
 
         this.setVisible(true);

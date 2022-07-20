@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -42,7 +41,7 @@ public class Soar extends Base{
 	
 	private ArrayList<String> logs = new ArrayList<String>();
 	
-	private String version = "2.2";
+	private String version = "2.2.1";
 
 	private String username, token, refreshToken, id;
 	
