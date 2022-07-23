@@ -148,7 +148,7 @@ public class Soar extends Base{
 						logger.info("Downloading Changelog...");
 						
 						try {
-					        URL url = new URL("https://pastebin.com/raw/zTpdMhrp");
+					        URL url = new URL("https://raw.githubusercontent.com/EldoDebug/Soar-Launcher/main/Changelog");
 					        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 					        
 					        String inputLine;

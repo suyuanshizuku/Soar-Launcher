@@ -213,7 +213,7 @@ public class ClientUtils {
 	private static boolean checkUpdate() {
     	Soar.instance.logger.info("Checking Update...");
 		try {
-	        URL url = new URL("https://pastebin.com/raw/WG2RGHJ4");
+	        URL url = new URL("https://raw.githubusercontent.com/EldoDebug/Soar-Launcher/main/Version");
 	        Scanner s = new Scanner(url.openStream());
 	        
 	        while (s.hasNext()) {
