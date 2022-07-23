@@ -15,14 +15,17 @@ import org.lwjgl.opengl.GL11;
 import soar.auth.AuthProgress;
 import soar.gui.Gui;
 import soar.gui.GuiSplashScreen;
+import soar.gui.SettingRam;
 import soar.media.Media;
 import soar.media.MediaManager;
 import soar.utils.ClientUtils;
 import soar.utils.ColorUtils;
 import soar.utils.EnumInfo;
+import soar.utils.EnumScene;
 import soar.utils.FileUtils;
 import soar.utils.FontUtils;
 import soar.utils.Logger;
+import soar.utils.RoundedUtils;
 import soar.utils.animation.Animation;
 import soar.utils.json.MinecraftJson;
 import soar.utils.json.MinecraftJsonParser;
@@ -38,6 +41,8 @@ public class Soar extends Base{
 	public MediaManager mediaManager = new MediaManager();
 	
 	public EnumInfo info;
+	public EnumScene scene;
+	public String checkInfo = "Check Files";
 	
 	private ArrayList<String> logs = new ArrayList<String>();
 	
@@ -51,6 +56,8 @@ public class Soar extends Base{
 	public Logger logger = new Logger();
     public static boolean loaded = false;
     private boolean load2 = false;
+    
+    public SettingRam settingRam;
     
 	public Soar() {
 		logger.info("Setting up...");
@@ -75,12 +82,13 @@ public class Soar extends Base{
 	@Override
 	public void drawScreen(int mouseX, int mouseY) {
 		
-		if(loaded) {
+		Gui.drawGradientRound(0, 0, this.getWidth(), this.getHeight(), 0, ColorUtils.getClientColor(0).getRGB(), ColorUtils.getClientColor(90).getRGB(), ColorUtils.getClientColor(180).getRGB(), ColorUtils.getClientColor(270).getRGB());
+
+		if(loaded && scene == EnumScene.MAIN) {
 			
 			int offsetY = 25;
 			int changeLogY = 138;
 			
-			Gui.drawGradientRound(0, 0, this.getWidth(), this.getHeight(), 0, ColorUtils.getClientColor(0).getRGB(), ColorUtils.getClientColor(90).getRGB(), ColorUtils.getClientColor(180).getRGB(), ColorUtils.getClientColor(270).getRGB());
 			Gui.drawRectangle(this.getWidth() - 70, 0, this.getWidth(), this.getHeight(), new Color(20, 20, 20, 60).getRGB());
 			
 			FontUtils.regular_bold40.drawString(20, 10, "Soar Launcher", org.newdawn.slick.Color.white);
@@ -125,8 +133,8 @@ public class Soar extends Base{
 			}
 			
 			GL11.glDisable(GL11.GL_SCISSOR_TEST);
-			FontUtils.icon40.drawString(this.getWidth() - 55, this.getHeight() - 55, "A", org.newdawn.slick.Color.white);
-		}else {
+			FontUtils.icon40.drawString(this.getWidth() - 55, this.getHeight() - 55, "D", org.newdawn.slick.Color.white);
+		}else if(!loaded){
 			new Thread() {
 				@Override
 				public void run() {
@@ -194,10 +202,30 @@ public class Soar extends Base{
 							authProgress.refreshTokenLogin();
 						}
 						
+						logger.info("Loading Setting Ram");
+						settingRam = new SettingRam();
+						
+						scene = EnumScene.MAIN;
 						loaded = true;
 					}
 				}
 			}.start();
+		}
+		
+		if(scene == EnumScene.SETTINGS) {
+			Gui.drawRound(this.getWidth() / 2 - (600 / 2), this.getHeight() / 2 - (400 / 2), 600, 400, 12, new Color(20, 20, 20, 60).getRGB());
+			
+			FontUtils.regular_bold40.drawString(200, 75, "Settings", org.newdawn.slick.Color.white);
+			FontUtils.icon40.drawString(this.getWidth() - 240, 85, "E", org.newdawn.slick.Color.white);
+			FontUtils.regular22.drawString(200, 130, "Memory: " + settingRam.currentRam + "GB");
+			settingRam.setPosition(280, 160);
+			settingRam.drawScreen(mouseX, mouseY);
+			
+			RoundedUtils.drawRound(200, 210, 180, 50, 8,  new Color(20, 20, 20, 60).getRGB());
+			FontUtils.regular22.drawString(230, 223, checkInfo, org.newdawn.slick.Color.white);
+			
+			RoundedUtils.drawRound(200, 280, 180, 50, 8,  new Color(20, 20, 20, 60).getRGB());
+			FontUtils.regular22.drawString(250, 293, "Logout", org.newdawn.slick.Color.white);
 		}
 		
 		GuiSplashScreen.drawScreen();
@@ -208,50 +236,79 @@ public class Soar extends Base{
 		
 		int offsetY = 25;
 		Desktop desktop = Desktop.getDesktop();
-        
-		for(Media m : mediaManager.getMedias()) {
+		
+		if(scene == EnumScene.MAIN) {
 			
-			if(MouseUtils.isInsideClick(mouseX, mouseY, this.getWidth() - 55, offsetY, 40, 40, ClickType.LEFT)) {
-				logger.info("Navigating to the browser...");
+			for(Media m : mediaManager.getMedias()) {
 				
-				try {
-					desktop.browse(new URI(m.getUrl()));
-				} catch (Exception e) {
-					e.printStackTrace();
+				if(MouseUtils.isInsideClick(mouseX, mouseY, this.getWidth() - 55, offsetY, 40, 40, ClickType.LEFT)) {
+					logger.info("Navigating to the browser...");
+					
+					try {
+						desktop.browse(new URI(m.getUrl()));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+				offsetY+=70;
+			}
+			
+			if(MouseUtils.isInsideClick(mouseX, mouseY, this.getWidth() / 2 + 140, this.getHeight() - 85, 240, 70, ClickType.LEFT)) {
+				if(info.equals(EnumInfo.LAUNCH)) {
+					new Thread() {
+						@Override
+						public void run() {
+							try {
+								info = EnumInfo.LAUNCHING;
+						        ClientUtils.downloadClient();
+						        MinecraftJson json = MinecraftJsonParser.parseJson(new File(FileUtils.clientFolder, "SoarClient.json"));
+						        ClientUtils.downloadJava();
+								ClientUtils.downloadLibraries(json.getLibraries());
+								ClientUtils.downloadNatives(json.getNativeLibraries());
+								ClientUtils.launchClient(json.getLibraries());
+							}catch(Exception e) {
+								e.printStackTrace();
+							}
+						}
+					}.start();
+				}else {
+					if(info.equals(EnumInfo.LOGIN)) {
+						logger.info("Login...");
+						authProgress.webViewLogin();
+					}
 				}
 			}
 			
-			offsetY+=70;
-		}
-		
-		if(MouseUtils.isInsideClick(mouseX, mouseY, this.getWidth() / 2 + 140, this.getHeight() - 85, 240, 70, ClickType.LEFT)) {
-			if(info.equals(EnumInfo.LAUNCH)) {
-				new Thread() {
-					@Override
-					public void run() {
-						try {
-					        ClientUtils.downloadClient();
-					        MinecraftJson json = MinecraftJsonParser.parseJson(new File(FileUtils.clientFolder, "SoarClient.json"));
-					        ClientUtils.downloadJava();
-							ClientUtils.downloadLibraries(json.getLibraries());
-							ClientUtils.downloadNatives(json.getNativeLibraries());
-							ClientUtils.launchClient(json.getLibraries());
-						}catch(Exception e) {
-							e.printStackTrace();
-						}
-					}
-				}.start();
-			}else {
-				if(info.equals(EnumInfo.LOGIN)) {
-					logger.info("Login...");
-					authProgress.webViewLogin();
-				}
+			if(MouseUtils.isInsideClick(mouseX, mouseY, this.getWidth() - 55, this.getHeight() - 55, 40, 40, ClickType.LEFT)) {
+				scene = EnumScene.SETTINGS;
 			}
 		}
 
-		if(MouseUtils.isInsideClick(mouseX, mouseY, this.getWidth() - 55, this.getHeight() - 55, 40, 40, ClickType.LEFT)) {
-			info = EnumInfo.LOGIN;
-			authProgress.webViewLogin();
+		if(scene == EnumScene.SETTINGS) {
+			if(MouseUtils.isInside(mouseX, mouseY, this.getWidth() - 240, 80, 50, 50)) {
+				settingRam.save();
+				scene = EnumScene.MAIN;
+			}
+			
+			if(MouseUtils.isInside(mouseX, mouseY, 200, 210, 180, 50) && checkInfo.equals("Check Files")) {
+				checkInfo = "Checking...";
+				ClientUtils.checkFiles();
+			}
+			
+			if(MouseUtils.isInside(mouseX, mouseY, 200, 280, 180, 50)) {
+				info = EnumInfo.LOGIN;
+				authProgress.webViewLogin();
+			}
+			
+			settingRam.mouseClicked(mouseX, mouseY);
+		}
+	}
+	
+	@Override
+	public void mouseReleased(int mouseX, int mouseY) {
+		if(scene == EnumScene.SETTINGS) {
+			settingRam.mouseReleased(mouseX, mouseY);
 		}
 	}
 	

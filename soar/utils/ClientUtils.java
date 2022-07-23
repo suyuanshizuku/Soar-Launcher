@@ -10,14 +10,10 @@ import java.util.List;
 import java.util.Scanner;
 
 import soar.Soar;
+import soar.utils.json.MinecraftJson;
+import soar.utils.json.MinecraftJsonParser;
 import soar.utils.json.MinecraftLibrary;
-import soar.utils.json.MinecraftNativeLibrary;
-
-import java.security.cert.CertificateException; 
-import java.security.cert.X509Certificate; 
-import javax.net.ssl.SSLContext; 
-import javax.net.ssl.TrustManager; 
-import javax.net.ssl.X509TrustManager; 
+import soar.utils.json.MinecraftNativeLibrary; 
 
 public class ClientUtils {
 	
@@ -40,6 +36,7 @@ public class ClientUtils {
 	            }
             }
             
+            launchCMD.add("-Xmx" + Soar.instance.settingRam.currentRam + "G");
             launchCMD.add("-Djava.library.path=" + FileUtils.nativesFolder.getAbsolutePath());
 
             final List<String> classpath = new ArrayList<>();
@@ -93,7 +90,7 @@ public class ClientUtils {
             launchCMD.add("1.8");
             
             final Process proc = new ProcessBuilder(launchCMD).start();
-            
+
             final BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             String isLine;
             while ((isLine = reader.readLine()) != null) {
@@ -110,6 +107,7 @@ public class ClientUtils {
             }
         }
         catch (IOException e) {
+        	Soar.instance.info = EnumInfo.LAUNCH;
             e.printStackTrace();
         }
     }
@@ -195,6 +193,19 @@ public class ClientUtils {
     		Soar.instance.logger.info("Downloading SoarClient.json");
     		FileUtils.downloadFile("https://github.com/EldoDebug/Soar-Launcher/releases/download/SoarClient-Files/SoarClient.json", new File(FileUtils.clientFolder, "SoarClient.json"));
         	Soar.instance.logger.info("Success Download Client Files!");
+        	
+        	if(!FileUtils.minecraftFolder.exists()) {
+        		FileUtils.minecraftFolder.mkdir();
+        		new File(FileUtils.minecraftFolder, "assets").mkdir();
+        		new File(FileUtils.minecraftFolder, "assets/indexes").mkdir();
+        		FileUtils.downloadFile("https://github.com/EldoDebug/Soar-Launcher/releases/download/SoarClient-Files/1.8.json", new File(FileUtils.minecraftFolder, "assets/indexes/1.8.json"));
+            	Soar.instance.logger.info("Success 1.8 index!");
+        	}
+        	
+        	if(!new File(FileUtils.minecraftFolder, "assets/indexes/1.8.json").exists()) {
+        		FileUtils.downloadFile("https://github.com/EldoDebug/Soar-Launcher/releases/download/SoarClient-Files/1.8.json", new File(FileUtils.minecraftFolder, "assets/indexes/1.8.json"));
+            	Soar.instance.logger.info("Success 1.8 index!");
+        	}
     	}
     }
     
@@ -212,9 +223,91 @@ public class ClientUtils {
 	            }
 	        }
 		}catch(Exception e) {
+        	Soar.instance.info = EnumInfo.LAUNCH;
 			Soar.instance.logger.error("Update check failed.");
 			e.printStackTrace();
 		}
     	return false;
+    }
+    
+    public static void checkFiles() {
+    	new Thread() {
+    		@Override
+    		public void run() {
+    			
+    			Soar.instance.logger.info("Checking File...");
+    			
+    	    	//Checking Java
+    	    	if(!FileUtils.javaFolder.exists()) {
+    	    		ClientUtils.downloadJava();
+    	    	}else {
+    	        	if(new File(FileUtils.javaFolder, "bin").length() == 0 || new File(FileUtils.javaFolder, "lib").length() == 0 ||
+    	        			!new File(FileUtils.javaFolder, "lib").exists() || !new File(FileUtils.javaFolder, "bin").exists() ||
+    	        			!new File(FileUtils.javaFolder, "conf").exists() || !new File(FileUtils.javaFolder, "jmods").exists() ||
+    	        			!new File(FileUtils.javaFolder, "lib/jvm.cfg").exists()) {
+    	    			Soar.instance.logger.info("Fix Java Files...");
+    	        		ClientUtils.deleteFiles(FileUtils.javaFolder.getPath());
+    	        		ClientUtils.downloadJava();
+    	        	}
+    	    	}
+    	    	
+    	    	//Checking Game
+    	    	if(!FileUtils.clientFolder.exists()) {
+	    			Soar.instance.logger.info("Fix Game Files...");
+    	    		FileUtils.clientFolder.mkdir();
+    	    		ClientUtils.downloadClient();
+			        MinecraftJson json = MinecraftJsonParser.parseJson(new File(FileUtils.clientFolder, "SoarClient.json"));
+    	    		ClientUtils.downloadLibraries(json.getLibraries());
+    	    		ClientUtils.downloadNatives(json.getNativeLibraries());
+    	    	}
+    	    	
+    	    	//Checking Client
+    	    	if(!new File(FileUtils.clientFolder, "SoarClient.jar").exists() || !new File(FileUtils.clientFolder, "SoarClient.json").exists()) {
+	    			Soar.instance.logger.info("Fix Client Files...");
+    	    		new File(FileUtils.clientFolder, "SoarClient.jar").delete();
+    	    		new File(FileUtils.clientFolder, "SoarClient.json").delete();
+    	    		ClientUtils.downloadClient();
+    	    	}
+    	    	
+    	    	//Checking lib
+    	    	if(!FileUtils.librariesFolder.exists() || FileUtils.librariesFolder.length() == 0) {
+	    			Soar.instance.logger.info("Fix Lib Files...");
+    	    		ClientUtils.deleteFiles(FileUtils.librariesFolder.getPath());
+			        MinecraftJson json = MinecraftJsonParser.parseJson(new File(FileUtils.clientFolder, "SoarClient.json"));
+    	    		ClientUtils.downloadLibraries(json.getLibraries());
+    	    	}
+    	    	
+    	    	//Checking index
+            	if(!FileUtils.minecraftFolder.exists()) {
+            		FileUtils.minecraftFolder.mkdir();
+            		new File(FileUtils.minecraftFolder, "assets").mkdir();
+            		new File(FileUtils.minecraftFolder, "assets/indexes").mkdir();
+            		FileUtils.downloadFile("https://github.com/EldoDebug/Soar-Launcher/releases/download/SoarClient-Files/1.8.json", new File(FileUtils.minecraftFolder, "assets/indexes/1.8.json"));
+                	Soar.instance.logger.info("Success 1.8 index!");
+            	}
+            	
+            	if(!new File(FileUtils.minecraftFolder, "assets/indexes/1.8.json").exists()) {
+            		FileUtils.downloadFile("https://github.com/EldoDebug/Soar-Launcher/releases/download/SoarClient-Files/1.8.json", new File(FileUtils.minecraftFolder, "assets/indexes/1.8.json"));
+                	Soar.instance.logger.info("Success 1.8 index!");
+            	}
+            	
+    	    	Soar.instance.checkInfo = "Check Files";
+    	    	Soar.instance.info = EnumInfo.LAUNCH;
+    		}
+    	}.start();
+    }
+    
+    private static void deleteFiles(String path) {
+        File filePath = new File(path);
+        String[] list = filePath.list();
+        for(String file : list) {
+            File f = new File(path + File.separator + file);
+            if(f.isDirectory()) {
+            	deleteFiles(path + File.separator + file);
+            }else {
+                f.delete();
+            }
+        }
+        filePath.delete();
     }
 }
