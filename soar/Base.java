@@ -1,11 +1,15 @@
 package soar;
 
 import java.io.File;
+import java.nio.ByteBuffer;
+
+import javax.imageio.ImageIO;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.opengl.ImageIOImageData;
 
 import soar.utils.FontUtils;
 import soar.utils.mouse.MouseUtils;
@@ -39,6 +43,10 @@ public class Base {
 		try {
 			Display.setDisplayMode(new DisplayMode(width, height));
 			Display.setTitle(title);
+			Display.setIcon(new ByteBuffer[] {
+                    new ImageIOImageData().imageToByteBuffer(ImageIO.read(new File("assets/icon16.png")), false, false, null),
+                    new ImageIOImageData().imageToByteBuffer(ImageIO.read(new File("assets/icon32.png")), false, false, null)
+                    });
 			Display.create();
 		}catch(Exception e) {
 			e.printStackTrace();
