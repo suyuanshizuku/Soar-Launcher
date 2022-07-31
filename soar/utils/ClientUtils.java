@@ -26,7 +26,7 @@ public class ClientUtils {
             switch (OSType.getType()) {
 	            case WINDOWS:{
 	                Soar.instance.logger.info("Set Windows Java!");
-	                launchCMD.add(new File(FileUtils.launcherDir + "/java/bin/java").getPath());
+	                launchCMD.add(new File(FileUtils.launcherDir + "/jre1.8.0_333/bin/java").getPath());
 	                break;
 	            }
 	            default:{
@@ -178,8 +178,8 @@ public class ClientUtils {
 			Soar.instance.info = EnumInfo.DOWNLOADING;
         	Soar.instance.logger.info("Downloading Java...");
     		FileUtils.javaFolder.mkdir();
-    		FileUtils.downloadFile("https://github.com/EldoDebug/Soar-Launcher/releases/download/SoarClient-Files/java.zip", new File(FileUtils.launcherDir, "java.zip"));
-    		FileUtils.unzip(new File(FileUtils.launcherDir, "java.zip"), FileUtils.javaFolder);
+    		FileUtils.downloadFile("https://github.com/EldoDebug/Soar-Launcher/releases/download/SoarClient-Files/jre1.8.0_333.zip", new File(FileUtils.launcherDir, "jre1.8.0_333.zip"));
+    		FileUtils.unzip(new File(FileUtils.launcherDir, "jre1.8.0_333.zip"), FileUtils.javaFolder);
         	Soar.instance.logger.info("Success Download Java Files!");
     	}
     }
@@ -243,8 +243,8 @@ public class ClientUtils {
     	    	}else {
     	        	if(new File(FileUtils.javaFolder, "bin").length() == 0 || new File(FileUtils.javaFolder, "lib").length() == 0 ||
     	        			!new File(FileUtils.javaFolder, "lib").exists() || !new File(FileUtils.javaFolder, "bin").exists() ||
-    	        			!new File(FileUtils.javaFolder, "conf").exists() || !new File(FileUtils.javaFolder, "jmods").exists() ||
-    	        			!new File(FileUtils.javaFolder, "lib/jvm.cfg").exists()) {
+    	        			!new File(FileUtils.javaFolder, "legal").exists() ||
+    	        			!new File(FileUtils.javaFolder, "lib/amd64/jvm.cfg").exists()) {
     	    			Soar.instance.logger.info("Fix Java Files...");
     	        		ClientUtils.deleteFiles(FileUtils.javaFolder.getPath());
     	        		ClientUtils.downloadJava();
@@ -292,6 +292,7 @@ public class ClientUtils {
             	}
             	
     	    	Soar.instance.checkInfo = "Check Files";
+    	    	
     	    	Soar.instance.info = EnumInfo.LAUNCH;
     		}
     	}.start();

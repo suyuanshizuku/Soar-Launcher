@@ -27,6 +27,10 @@ public class ThemeParser {
 			}
 		}
 		
+		if(dataFile.length() == 0) {
+			notExists = true;
+		}
+		
 		ThemeParser.parseTheme();
 	}
 	

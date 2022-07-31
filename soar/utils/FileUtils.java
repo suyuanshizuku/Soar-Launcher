@@ -19,7 +19,7 @@ public class FileUtils {
 	public static File logDir = new File(FileUtils.launcherDir, "log");
 	public static File clientFolder = new File(FileUtils.launcherDir, "game");
 	public static File assetsFolder = new File(FileUtils.launcherDir, "assets");
-	public static File javaFolder = new File(FileUtils.launcherDir, "java");
+	public static File javaFolder = new File(FileUtils.launcherDir, "jre1.8.0_333");
 	public static File nativesFolder = new File(FileUtils.clientFolder, "natives");
 	public static File librariesFolder = new File(FileUtils.clientFolder, "libraries");
 	public static String appdata = System.getenv("APPDATA");

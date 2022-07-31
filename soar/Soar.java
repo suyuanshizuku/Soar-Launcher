@@ -46,7 +46,7 @@ public class Soar extends Base{
 	
 	private ArrayList<String> logs = new ArrayList<String>();
 	
-	private String version = "2.2.3";
+	private String version = "2.2.5";
 
 	private String username, token, refreshToken, id;
 	
