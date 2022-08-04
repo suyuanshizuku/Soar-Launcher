@@ -1,10 +1,5 @@
-Add Skip Update(Client Side Update)
-Better Network
-Fix Target Info
-Fix Enchantment Memory leak
-Fix Chunk Update
-Fix Integarted Server
-Fix Item Combine
-Fix Enum Facing
-Fix DamageTint
-Fix Target Capsule
+Add Toggle Sneak(Sneak)
+Better TargetInfo
+Better Target Capsule
+Fix Freelook(NameTag)
+Fix NameTag
