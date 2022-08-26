@@ -3,6 +3,8 @@ package me.eldodebug.soarlauncher.management.scene.impl;
 import java.awt.Color;
 import java.io.File;
 
+import org.lwjgl.opengl.GL11;
+
 import me.eldodebug.soarlauncher.SoarLauncher;
 import me.eldodebug.soarlauncher.gui.Gui;
 import me.eldodebug.soarlauncher.management.scene.Scene;
@@ -38,11 +40,16 @@ public class SoarScene extends Scene{
 		
 		Gui.drawRectangle(80, 135, 350, 2, new Color(238, 240, 245).getRGB());
 		
+		GL11.glEnable(GL11.GL_SCISSOR_TEST);
+		GL11.glScissor(55, 194, 376, 205);
+		
 		for(String s : SoarLauncher.instance.changelogManager.getSoarChangelogs()) {
 			FontUtils.drawString(FontUtils.regular22, s, 95, 140 + offsetY + scrollAnimation.getValue(), new Color(85, 85, 85));
 			offsetY+=24;
 			index++;
 		}
+		
+		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 		
 		//Launch Button
 		Gui.drawSmoothRound(SoarLauncher.instance.getWidth() - 250, SoarLauncher.instance.getHeight() - 85, 225, 65, 12, -1);
@@ -74,7 +81,7 @@ public class SoarScene extends Scene{
 	public void mouseClicked(int mouseX, int mouseY) {
 		if(MouseUtils.isInside(mouseX, mouseY, SoarLauncher.instance.getWidth() - 250, SoarLauncher.instance.getHeight() - 85, 225, 65)) {
 			if(this.getInfo().equals("Please Login")) {
-				SoarLauncher.instance.authManager.webViewLogin();
+				SoarLauncher.instance.accountManager.webViewLogin();
 			}else if(this.getInfo().equals("Launch")) {
 				this.setInfo("Launching...");
 				

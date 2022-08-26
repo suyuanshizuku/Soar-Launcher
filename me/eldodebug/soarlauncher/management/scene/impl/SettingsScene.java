@@ -17,7 +17,7 @@ public class SettingsScene extends Scene{
 	public static String progress = "Check Files";
 	
 	public SettingsScene() {
-		super("Settings", false);
+		super("Settings", true);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class SettingsScene extends Scene{
 		memorySettings.mouseClicked(mouseX, mouseY);
 		
 		if(MouseUtils.isInsideClick(mouseX, mouseY, 90, 160, 180, 50, ClickType.LEFT)) {
-			SoarLauncher.instance.authManager.webViewLogin();
+			SoarLauncher.instance.accountManager.webViewLogin();
 		}
 		
 		if(MouseUtils.isInside(mouseX, mouseY, 90, 230, 180, 50)) {

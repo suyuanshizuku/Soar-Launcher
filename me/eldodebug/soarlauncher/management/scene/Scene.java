@@ -7,11 +7,11 @@ public class Scene {
 	private String name;
 	private String info;
 	public SimpleAnimation fontAnimation = new SimpleAnimation(0.0F);
-	private boolean client;
+	private boolean showSide;
 	
-	public Scene(String name, boolean client) {
+	public Scene(String name, boolean showSide) {
 		this.name = name;
-		this.client = client;
+		this.showSide = showSide;
 		this.info = "Launch";
 	}
 
@@ -33,11 +33,11 @@ public class Scene {
 		this.info = info;
 	}
 
-	public boolean isClient() {
-		return client;
+	public boolean isShowSide() {
+		return showSide;
 	}
 
-	public void setClient(boolean client) {
-		this.client = client;
+	public void setShowSide(boolean showSide) {
+		this.showSide = showSide;
 	}
 }

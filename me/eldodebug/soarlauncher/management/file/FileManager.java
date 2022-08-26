@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import me.eldodebug.soarlauncher.SoarLauncher;
 import me.eldodebug.soarlauncher.utils.Logger;
+import me.eldodebug.soarlauncher.utils.OSType;
 
 public class FileManager {
     
@@ -37,26 +38,28 @@ public class FileManager {
 	
 	
 	//Minecraft Directory
-	private File appdata = new File(System.getenv("APPDATA"));
-	private File minecraftDir = new File(appdata, ".minecraft");
+	private File appdata;
+	private File minecraftDir;
 	
 	//Log
 	private File logDir = new File(new File("soar logs").getAbsolutePath());
 	private File logFile = new File(logDir, "launcher.log");
 	
 	//Account
-	private File accountFile = new File(launcherDir, "Accounts.txt");
+	private File accountFile = new File(launcherDir, "AccountManager.txt");
 	
 	//Client Configuration
 	private File configFile = new File(launcherDir, "LauncherConfig.txt");
 	
 	//Soar Client Configuration
-	private File soarConfigFile = new File(minecraftDir, "soar/Config.txt");
+	private File soarConfigFile;
 	
 	public FileManager() {
 		
 		//Create Directories
 		Logger.info("Loading FileManager");
+		
+		OSType osType = OSType.getType();
 		
 		//Create Launucher Directory
 		if(!launcherDir.exists()) {
@@ -128,12 +131,19 @@ public class FileManager {
 			}
 		}
 		
-		//Create Soar Configuration
-		if(!soarConfigFile.exists()) {
-			try {
-				soarConfigFile.createNewFile();
-			} catch (IOException e) {
-				Logger.error(e.getMessage());
+		if(osType.equals(OSType.WINDOWS)) {
+			
+			appdata = new File(System.getenv("APPDATA"));
+			minecraftDir = new File(appdata, ".minecraft");
+			soarConfigFile = new File(minecraftDir, "soar/Config.txt");
+			
+			//Create Soar Configuration
+			if(!soarConfigFile.exists()) {
+				try {
+					soarConfigFile.createNewFile();
+				} catch (IOException e) {
+					Logger.error(e.getMessage());
+				}
 			}
 		}
 	}

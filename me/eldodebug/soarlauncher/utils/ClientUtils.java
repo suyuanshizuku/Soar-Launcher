@@ -91,13 +91,13 @@ public class ClientUtils {
             launchCMD.add(String.join(File.pathSeparator, classpath));
             launchCMD.add("net.minecraft.client.main.Main");
             launchCMD.add("--accessToken");
-            launchCMD.add(SoarLauncher.instance.authManager.getToken());
+            launchCMD.add(SoarLauncher.instance.accountManager.currentAccount.getToken());
             launchCMD.add("--version");
             launchCMD.add("SoarClient");
             launchCMD.add("--username");
-            launchCMD.add(SoarLauncher.instance.authManager.getUsername());
+            launchCMD.add(SoarLauncher.instance.accountManager.currentAccount.getUsername());
             launchCMD.add("--uuid");
-            launchCMD.add(SoarLauncher.instance.authManager.getUuid());
+            launchCMD.add(SoarLauncher.instance.accountManager.currentAccount.getUuid());
             
             String launchDirAfterUserFolder = null;
             Logger.info("Setting Minecraft Location...");
@@ -290,12 +290,10 @@ public class ClientUtils {
     		urlJson = SOAR_CLIENT_JSON_URL;
     	}
     	
-    	if(!(new File(file, name + ".jar").exists()) || !(new File(file, name + ".json").exists()) || ClientUtils.checkClientUpdate(scene)) {
-        	scene.setInfo("Downloading...");
-        	
-    		FileUtils.downloadFile(urlJar, new File(file, name + ".jar"));
-    		FileUtils.downloadFile(urlJson, new File(file, name + ".json"));
-        	
+    	
+    	OSType osType = OSType.getType();
+    	
+    	if(osType.equals(OSType.WINDOWS)) {
         	if(!SoarLauncher.instance.fileManager.getMinecraftDir().exists()) {
         		SoarLauncher.instance.fileManager.getMinecraftDir().mkdir();
         		new File(SoarLauncher.instance.fileManager.getMinecraftDir(), "assets").mkdir();
@@ -306,6 +304,13 @@ public class ClientUtils {
         	if(!new File(SoarLauncher.instance.fileManager.getMinecraftDir(), "assets/indexes/1.8.json").exists()) {
         		FileUtils.downloadFile(INDEX_URL, new File(SoarLauncher.instance.fileManager.getMinecraftDir(), "assets/indexes/1.8.json"));
         	}
+    	}
+    	
+    	if(!(new File(file, name + ".jar").exists()) || !(new File(file, name + ".json").exists()) || ClientUtils.checkClientUpdate(scene)) {
+        	scene.setInfo("Downloading...");
+        	
+    		FileUtils.downloadFile(urlJar, new File(file, name + ".jar"));
+    		FileUtils.downloadFile(urlJson, new File(file, name + ".json"));
     	}
     }
     

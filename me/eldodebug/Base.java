@@ -85,6 +85,7 @@ public class Base {
 			}
 			
 			if(Display.isCloseRequested()) {
+				SoarLauncher.instance.accountManager.saveAccounts();
 				SoarLauncher.instance.fileManager.saveClientSettings();
 				Logger.info("Closed Launcher!");
 				Logger.save();

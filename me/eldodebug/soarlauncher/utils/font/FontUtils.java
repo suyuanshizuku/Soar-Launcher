@@ -18,6 +18,7 @@ public class FontUtils {
 	
 	public static UnicodeFont regular20;
 	public static UnicodeFont regular22;
+	public static UnicodeFont regular30;
 	public static UnicodeFont regular40;
 	public static UnicodeFont regular_bold24;
 	public static UnicodeFont regular_bold34;
@@ -25,6 +26,7 @@ public class FontUtils {
 	
 	public static Font regular20_;
 	public static Font regular22_;
+	public static Font regular30_;
 	public static Font regular40_;
 	public static Font regular_bold24_;
 	public static Font regular_bold34_;
@@ -46,6 +48,18 @@ public class FontUtils {
 				regular20.getEffects().add(new ColorEffect(Color.WHITE));
 				regular20.addAsciiGlyphs();
 				regular20.loadGlyphs();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			
+			try {
+				input = new BufferedInputStream(new FileInputStream(new File("assets/regular.ttf")));
+				locationMap.put(new File("assets/regular.ttf").getAbsolutePath(), regular30_ = Font.createFont(0, input));
+				regular30_ = regular30_.deriveFont(Font.PLAIN, 30);
+				regular30 = new UnicodeFont(regular30_);
+				regular30.getEffects().add(new ColorEffect(Color.WHITE));
+				regular30.addAsciiGlyphs();
+				regular30.loadGlyphs();
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

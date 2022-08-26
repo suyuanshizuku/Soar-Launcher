@@ -7,7 +7,7 @@ import org.lwjgl.input.Keyboard;
 import me.eldodebug.Base;
 import me.eldodebug.soarlauncher.gui.Gui;
 import me.eldodebug.soarlauncher.gui.GuiSplashScreen;
-import me.eldodebug.soarlauncher.management.auth.AuthManager;
+import me.eldodebug.soarlauncher.management.auth.AccountManager;
 import me.eldodebug.soarlauncher.management.changelog.ChangelogManager;
 import me.eldodebug.soarlauncher.management.color.ColorManager;
 import me.eldodebug.soarlauncher.management.file.FileManager;
@@ -30,18 +30,18 @@ public class SoarLauncher extends Base{
 
 	public static SoarLauncher instance;
 	
-	private String name = "Soar Launcher", version = "3.0";
+	private String name = "Soar Launcher", version = "3.2";
 	
 	public FileManager fileManager;
 	public SceneManager sceneManager;
 	public ChangelogManager changelogManager;
 	public SettingsManager settingsManager;
-	public AuthManager authManager;
+	public AccountManager accountManager;
 	public ColorManager colorManager;
 	
 	public String currentScene;
 	
-	private boolean open;
+	public boolean open;
 	private boolean loadedAnimation;
 	public boolean loaded;
 	private boolean update;
@@ -111,15 +111,16 @@ public class SoarLauncher extends Base{
 				
 				s.fontAnimation.setAnimation(currentScene.equals(s.getName()) ? currentScene.equals("Settings") ? 0 : 175 : 0, 16);
 				
-				if(s.isClient()) {
-					
-					FontUtils.drawString(FontUtils.regular22, s.getName(), ((loadedAnimation) ? (float) animation.getValue() : 0) - 100, 90 + offsetY, new Color(80 + (int) s.fontAnimation.getValue(), 80 + (int) s.fontAnimation.getValue(), 80 + (int) s.fontAnimation.getValue(), (int) (loadedAnimation ? opacityAnimation.getValue() : 0)));
-					
-					if(currentScene.equals(s.getName())) {
-						clientOffsetY = offsetY;
+				if(s.isShowSide()) {
+					if(!s.getName().equals("Settings")) {
+						FontUtils.drawString(FontUtils.regular22, s.getName(), ((loadedAnimation) ? (float) animation.getValue() : 0) - 100, 90 + offsetY, new Color(80 + (int) s.fontAnimation.getValue(), 80 + (int) s.fontAnimation.getValue(), 80 + (int) s.fontAnimation.getValue(), (int) (loadedAnimation ? opacityAnimation.getValue() : 0)));
+						
+						if(currentScene.equals(s.getName())) {
+							clientOffsetY = offsetY;
+						}
+						
+						offsetY+=63;
 					}
-					
-					offsetY+=63;
 				}
 			}
 			
@@ -172,11 +173,13 @@ public class SoarLauncher extends Base{
 			
 			if(open) {
 				for(Scene s : sceneManager.getScenes()) {
-					if(s.isClient()) {
-						if(MouseUtils.isInsideClick(mouseX, mouseY, 10, 85 + offsetY, 130, 38, ClickType.LEFT)) {
-							currentScene = s.getName();
+					if(s.isShowSide()) {
+						if(!s.getName().equals("Settings")) {
+							if(MouseUtils.isInsideClick(mouseX, mouseY, 10, 85 + offsetY, 130, 38, ClickType.LEFT)) {
+								currentScene = s.getName();
+							}
+							offsetY+=63;
 						}
-						offsetY+=63;
 					}
 				}
 			}
@@ -204,11 +207,17 @@ public class SoarLauncher extends Base{
 					sceneManager = new SceneManager();
 					changelogManager = new ChangelogManager();
 					settingsManager = new SettingsManager();
-					authManager = new AuthManager();
+					accountManager = new AccountManager();
 					colorManager = new ColorManager();
 					fileManager.loadClientSettings();
 					
-					authManager.refreshTokenLogin();
+					if(SoarLauncher.instance.fileManager.getAccountFile().length() == 0) {
+						SoarLauncher.instance.sceneManager.setInfoToLogin();
+					}else {
+						SoarLauncher.instance.accountManager.loadAccounts();
+					}
+					
+					accountManager.refreshTokenLogin();
 					
 					if(ClientUtils.checkLauncherUpdate()) {
 						update = true;

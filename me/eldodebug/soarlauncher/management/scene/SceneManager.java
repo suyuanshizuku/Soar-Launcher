@@ -3,6 +3,7 @@ package me.eldodebug.soarlauncher.management.scene;
 import java.util.ArrayList;
 
 import me.eldodebug.soarlauncher.SoarLauncher;
+import me.eldodebug.soarlauncher.management.scene.impl.AccountManagerScene;
 import me.eldodebug.soarlauncher.management.scene.impl.SettingsScene;
 import me.eldodebug.soarlauncher.management.scene.impl.SoarLiteScene;
 import me.eldodebug.soarlauncher.management.scene.impl.SoarScene;
@@ -14,9 +15,11 @@ public class SceneManager {
 	
 	public SceneManager() {
 		Logger.info("Loading Scene Manager");
+		
 		scenes.add(new SettingsScene());
 		scenes.add(new SoarScene());
 		scenes.add(new SoarLiteScene());
+		scenes.add(new AccountManagerScene());
 	}
 
 	public ArrayList<Scene> getScenes() {

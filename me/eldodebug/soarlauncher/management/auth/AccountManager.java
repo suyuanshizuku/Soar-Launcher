@@ -1,5 +1,6 @@
 package me.eldodebug.soarlauncher.management.auth;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -14,20 +15,11 @@ import openauth.microsoft.MicrosoftAuthResult;
 import openauth.microsoft.MicrosoftAuthenticationException;
 import openauth.microsoft.MicrosoftAuthenticator;
 
-public class AuthManager {
-
-	private String username;
-	private String uuid;
-	private String token;
-	private String refreshToken;
+public class AccountManager {
 	
-	public AuthManager() {
-		if(SoarLauncher.instance.fileManager.getAccountFile().length() == 0) {
-			SoarLauncher.instance.sceneManager.setInfoToLogin();
-		}else {
-			loadAccounts();
-		}
-	}
+	public Account currentAccount;
+	
+	private ArrayList<Account> accounts = new ArrayList<Account>();
 
 	public void webViewLogin() {
 		new Thread() {
@@ -38,10 +30,8 @@ public class AuthManager {
 					SoarLauncher.instance.sceneManager.setInfoToLoading();
 					MicrosoftAuthResult acc = authenticator.loginWithWebview();
 					Logger.info("Logging...");
-					SoarLauncher.instance.authManager.setUsername(acc.getProfile().getName());
-					SoarLauncher.instance.authManager.setUuid(acc.getProfile().getId());
-					SoarLauncher.instance.authManager.setToken(acc.getAccessToken());
-					SoarLauncher.instance.authManager.setRefreshToken(acc.getRefreshToken());
+					accounts.add(new Account(acc.getProfile().getName(), acc.getProfile().getId(), acc.getAccessToken(), acc.getRefreshToken()));
+					currentAccount = SoarLauncher.instance.accountManager.getAccountByUsername(acc.getProfile().getName());
 					saveAccounts();
 					Logger.info("Success Login!");
 					SoarLauncher.instance.sceneManager.setInfoToLaunch();
@@ -65,8 +55,8 @@ public class AuthManager {
 		
 		try {
 			Logger.info("Logging...");
-			MicrosoftAuthResult acc = authenticator.loginWithRefreshToken(SoarLauncher.instance.authManager.getRefreshToken());
-			SoarLauncher.instance.authManager.setToken(acc.getAccessToken());
+			MicrosoftAuthResult acc = authenticator.loginWithRefreshToken(SoarLauncher.instance.accountManager.currentAccount.getRefreshToken());
+			SoarLauncher.instance.accountManager.currentAccount.setToken(acc.getAccessToken());
 			Logger.info("Success Login!");
 			SoarLauncher.instance.sceneManager.setInfoToLaunch();
 		} catch (MicrosoftAuthenticationException e) {
@@ -76,15 +66,43 @@ public class AuthManager {
 		}
 	}
 	
+	public void refreshTokenLogin(Account ac, String refreshToken) {
+		SoarLauncher.instance.sceneManager.setInfoToLoading();
+		MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
+		ac.setInfoColor(new Color(85, 85, 85));
+		
+		ac.setInfo("Logging...");
+		
+		try {
+			Logger.info("Logging...");
+			MicrosoftAuthResult acc = authenticator.loginWithRefreshToken(refreshToken);
+			
+			SoarLauncher.instance.accountManager.currentAccount.setToken(acc.getAccessToken());
+			currentAccount = SoarLauncher.instance.accountManager.getAccountByUsername(acc.getProfile().getName());
+			
+			Logger.info("Success Login!");
+			ac.setInfoColor(new Color(40, 255, 40));
+			ac.setInfo("Success!");
+			SoarLauncher.instance.sceneManager.setInfoToLaunch();
+		} catch (MicrosoftAuthenticationException e) {
+			SoarLauncher.instance.sceneManager.setInfoToLogin();
+			Logger.error("Field Login!");
+			ac.setInfoColor(new Color(255, 40, 40));
+			ac.setInfo("Field!");
+			Logger.error(e.getMessage());
+		}
+	}
+	
 	public void saveAccounts() {
 		
 		ArrayList<String> toSave = new ArrayList<String>();
 		
-		toSave.add("username:" + SoarLauncher.instance.authManager.getUsername());
-		toSave.add("uuid:" + SoarLauncher.instance.authManager.getUuid());
-		toSave.add("token:" + SoarLauncher.instance.authManager.getToken());
-		toSave.add("refreshtoken:" + SoarLauncher.instance.authManager.getRefreshToken());
+		toSave.add("currentaccount:" + currentAccount.getUsername() + ":" + currentAccount.getUuid() + ":" + currentAccount.getToken() + ":" + currentAccount.getRefreshToken());
 		
+		for(Account a : SoarLauncher.instance.accountManager.getAccounts()) {
+			toSave.add("account:" + a.getUsername() + ":" + a.getUuid() + ":" + a.getToken() + ":" + a.getRefreshToken());
+		}
+
 		try {
 			PrintWriter pw = new PrintWriter(SoarLauncher.instance.fileManager.getAccountFile());
 			for (String str : toSave) {
@@ -119,55 +137,26 @@ public class AuthManager {
 		for (String s : lines) {
 			String[] args = s.split(":");
 			
-			if(!StringUtils.containsIgnoreCase(lines.toString(), "username:") || !StringUtils.containsIgnoreCase(lines.toString(), "uuid:")
-					|| !StringUtils.containsIgnoreCase(lines.toString(), "token:")|| !StringUtils.containsIgnoreCase(lines.toString(), "refreshtoken:")) {
+			if(!StringUtils.containsIgnoreCase(lines.toString(), "account:") || !StringUtils.containsIgnoreCase(lines.toString(), "currentaccount:")) {
 				SoarLauncher.instance.sceneManager.setInfoToLogin();
 			}else {
-				if (s.toLowerCase().startsWith("username:")) {
-					setUsername(args[1]);
+				
+				if (s.toLowerCase().startsWith("currentaccount:")) {
+					SoarLauncher.instance.accountManager.currentAccount = new Account(args[1], args[2], args[3], args[4]);
 				}
-				if (s.toLowerCase().startsWith("uuid:")) {
-					setUuid(args[1]);
-				}
-				if (s.toLowerCase().startsWith("token:")) {
-					setToken(args[1]);
-				}
-				if (s.toLowerCase().startsWith("refreshtoken:")) {
-					setRefreshToken(args[1]);
+				
+				if (s.toLowerCase().startsWith("account:")) {
+					SoarLauncher.instance.accountManager.getAccounts().add(new Account(args[1], args[2], args[3], args[4]));
 				}
 			}
 		}
 	}
+
+	public ArrayList<Account> getAccounts() {
+		return accounts;
+	}
 	
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
-
-	public String getToken() {
-		return token;
-	}
-
-	public void setToken(String token) {
-		this.token = token;
-	}
-
-	public String getRefreshToken() {
-		return refreshToken;
-	}
-
-	public void setRefreshToken(String refreshToken) {
-		this.refreshToken = refreshToken;
+	public Account getAccountByUsername(String username) {
+		return accounts.stream().filter(account -> account.getUsername().equalsIgnoreCase(username)).findFirst().orElse(null);
 	}
 }

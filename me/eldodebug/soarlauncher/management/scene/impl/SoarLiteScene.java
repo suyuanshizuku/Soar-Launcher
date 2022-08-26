@@ -79,7 +79,7 @@ public class SoarLiteScene extends Scene{
 	public void mouseClicked(int mouseX, int mouseY) {
 		if(MouseUtils.isInside(mouseX, mouseY, SoarLauncher.instance.getWidth() - 250, SoarLauncher.instance.getHeight() - 85, 225, 65)) {
 			if(this.getInfo().equals("Please Login")) {
-				SoarLauncher.instance.authManager.webViewLogin();
+				SoarLauncher.instance.accountManager.webViewLogin();
 			}else if(this.getInfo().equals("Launch")) {
 				this.setInfo("Launching...");
 				
