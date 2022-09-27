@@ -1,4 +1,4 @@
-package me.eldodebug.soarlauncher.utils;
+package soarlauncher.utils;
 
 public enum OSType {
 	
